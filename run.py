@@ -11,6 +11,9 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import accuracy_score
 from sklearn.svm import SVC
 
 
@@ -21,8 +24,8 @@ def main(argv):
     
     array = dataset.values
     X = array[:,0:4]
-    y = array[:,4]
-    X_train, X_validation, Y_train, Y_validation = train_test_split(X, y, test_size=0.20, random_state=1)
+    Y = array[:,4]
+    X_train, X_validation, Y_train, Y_validation = train_test_split(X, Y, test_size=0.20, random_state=1)
     
     # Spot Check Algorithms
     models = []
@@ -42,6 +45,16 @@ def main(argv):
 	    results.append(cv_results)
 	    names.append(name)
 	    print("%s: %f (%f)" % (name, cv_results.mean(), cv_results.std()))
+     
+    # Make predictions on validation dataset
+    model = SVC(gamma="auto")
+    model.fit(X_train, Y_train)
+    predictions = model.predict(X_validation)
+    
+    # Evaluate predictions
+    print(accuracy_score(Y_validation, predictions))
+    print(confusion_matrix(Y_validation, predictions))
+    print(classification_report(Y_validation, predictions))
     
     
 if __name__ == "__main__":
